@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>居家安全意识评估</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --accent: #78716c;
+    --text: #1c1917;
+    --text-light: #a8a29e;
+    --border: #e7e5e4;
+    --red: #b91c1c;
+    --red-light: #fca5a5;
+    --red-dark: #7f1d1d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 3s ease, color 3s ease;
+    overflow-x: hidden;
+  }
+
+  body.p2 { background: #f5f0eb; }
+  body.p3 { background: #e8e0d4; }
+  body.p4 { background: #0f0f0f; color: #d4d4d4; }
+
+  .header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    position: sticky; top: 0; z-index: 100;
+    transition: all 3s ease;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  body.p4 .header { background: #0a0a0a; border-bottom-color: #1a1a1a; }
+
+  .logo { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 2px; transition: all 3s ease; }
+  body.p4 .logo { color: var(--red); letter-spacing: 4px; }
+
+  .logo-badge {
+    font-size: 9px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text-light); letter-spacing: 1px; transition: all 3s ease;
+  }
+  body.p4 .logo-badge { border-color: #333; color: #555; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 36px 20px 120px; }
+
+  .intro { margin-bottom: 36px; transition: opacity 1s ease; }
+  .intro h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; line-height: 1.5; letter-spacing: -0.3px; transition: all 3s ease; }
+  body.p4 .intro h1 { color: #eee; }
+  .intro p { font-size: 12.5px; color: var(--text-light); line-height: 1.9; transition: all 3s ease; }
+
+  .progress-wrap { margin: 20px 0 28px; }
+  .progress-bar { width: 100%; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; transition: all 3s ease; }
+  body.p4 .progress-bar { background: #222; }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease, background 3s ease; }
+  body.p4 .progress-fill { background: var(--red); }
+  .progress-label { font-size: 10px; color: var(--text-light); margin-top: 6px; letter-spacing: 1px; transition: all 3s ease; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 28px 24px; margin-bottom: 16px;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 3s ease, border-color 3s ease;
+  }
+  .card.vis { opacity: 1; transform: translateY(0); }
+  .card.done { pointer-events: none; opacity: 0.55; }
+  .card.dark { background: #111; border-color: #1a1a1a; color: #ccc; }
+  .card.glow { border-color: var(--red); box-shadow: 0 0 20px rgba(185,28,28,0.06); }
+  .card.final { background: #080404; border: 1.5px solid var(--red); box-shadow: 0 0 40px rgba(185,28,28,0.12); }
+
+  .q-tag {
+    font-size: 10px; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px;
+    font-weight: 500; transition: color 3s ease;
+  }
+  .q-tag.red { color: var(--red); }
+
+  .q-body { font-size: 15.5px; font-weight: 500; line-height: 1.7; margin-bottom: 16px; }
+  .q-hint { font-size: 10.5px; color: #bbb; margin-bottom: 14px; font-style: italic; }
+
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+
+  .opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; border: 1px solid var(--border); border-radius: 7px;
+    cursor: pointer; font-size: 13px; line-height: 1.5;
+    transition: all 0.2s ease;
+  }
+  .opt:hover { background: #fafaf5; border-color: #d6d3d1; }
+  .opt.sel { background: #f5f0ea; border-color: var(--accent); }
+  .opt.dk { border-color: #222; color: #bbb; }
+  .opt.dk:hover { background: #151515; border-color: #444; }
+  .opt.dk.sel { background: #1a0808; border-color: var(--red); }
+
+  .dot {
+    width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .opt.sel .dot { border-color: var(--accent); }
+  .opt.sel .dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .opt.dk .dot { border-color: #333; }
+  .opt.dk.sel .dot { border-color: var(--red); }
+  .opt.dk.sel .dot::after { background: var(--red); }
+
+  .resp {
+    margin-top: 12px; padding: 11px 14px;
+    background: #faf8f5; border-left: 2px solid var(--accent);
+    border-radius: 0 6px 6px 0; font-size: 12px; line-height: 1.8; color: #78716c;
+    display: none;
+  }
+  .resp.on { display: block; animation: up 0.4s ease; }
+  .resp.dk-r { background: #110808; border-left-color: var(--red); color: #e88; }
+  .resp.thr { background: #0a0000; border-left-color: var(--red); color: var(--red); }
+
+  .sys {
+    font-size: 9px; color: #ccc; padding: 5px 0; border-top: 1px dashed #ddd;
+    margin-top: 8px; font-family: 'Courier New', monospace; display: none; letter-spacing: 0.5px;
+  }
+  .sys.on { display: block; animation: up 0.6s ease; }
+  .sys.r { color: rgba(185,28,28,0.6); border-top-color: rgba(185,28,28,0.15); }
+
+  .result { display: none; text-align: center; padding: 50px 16px; }
+  .result.on { display: block; animation: up 1s ease; }
+  .r-title { font-size: 26px; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
+  .r-num { font-size: 38px; font-weight: 700; margin: 18px 0; font-family: 'Courier New', monospace; }
+  .r-body { font-size: 13.5px; line-height: 2.2; max-width: 440px; margin: 0 auto; color: #888; }
+
+  @keyframes up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    15%{transform:translateX(-5px)}
+    30%{transform:translateX(5px)}
+    45%{transform:translateX(-4px)}
+    60%{transform:translateX(4px)}
+    75%{transform:translateX(-2px)}
+    90%{transform:translateX(2px)}
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  .wm {
+    position: fixed; bottom: 14px; right: 14px; font-size: 8px; color: transparent;
+    letter-spacing: 1px; font-family: 'Courier New', monospace; pointer-events: none; z-index: 50;
+    transition: color 4s ease;
+  }
+  .wm.on { color: rgba(185,28,28,0.15); }
+
+  .ov {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0); pointer-events: none; z-index: 90;
+    transition: background 3s ease;
+  }
+  .ov.dim { background: rgba(0,0,0,0.5); }
+
+  .knock {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: #000; z-index: 200; display: none;
+    justify-content: center; align-items: center; flex-direction: column;
+  }
+  .knock.on { display: flex; }
+  .k-text { color: var(--red); font-size: 22px; font-weight: 500; letter-spacing: 3px; }
+  .k-sub { color: #444; font-size: 11px; margin-top: 14px; letter-spacing: 1px; opacity: 0; transition: opacity 1s ease; }
+  .k-sub.on { opacity: 1; }
+
+  .flicker { animation: fl 0.12s infinite alternate; }
+  @keyframes fl { from{opacity:1}to{opacity:0.88} }
+
+  .sc-line {
+    width: 100%; height: 1px; background: var(--border); margin: 16px 0;
+    transition: background 3s ease;
+  }
+  body.p4 .sc-line { background: #1a1a1a; }
+
+  .footer-note {
+    text-align: center; font-size: 9px; color: var(--text-light); letter-spacing: 1px;
+    margin-top: 40px; transition: all 3s ease;
+  }
+  body.p4 .footer-note { color: #333; }
+</style>
+</head>
+<body>
+
+<div class="ov" id="ov"></div>
+<div class="wm" id="wm">он здесь</div>
+
+<div class="knock" id="knock">
+  <div class="k-text" id="kText"></div>
+  <div class="k-sub" id="kSub"></div>
+</div>
+
+<div class="header">
+  <div class="logo" id="logo">居家安全意识评估中心</div>
+  <div class="logo-badge" id="badge">官方授权</div>
+</div>
+
+<div class="container">
+  <div class="intro" id="intro">
+    <h1 id="title">居民居家安全意识评估</h1>
+    <p>本问卷由社区安全管理办公室发起，旨在评估居民的居家安全意识水平与应急响应能力。问卷共 12 题，约需 3 分钟。您的数据将严格保密，仅用于安全评估用途。</p>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+      <div class="progress-label" id="pLabel">0 / 12</div>
+    </div>
+  </div>
+  <div id="qBox"></div>
+  <div class="result" id="res"></div>
+</div>
+
+<script>
+(function(){
+  var cur = 0, score = 0, lk = {};
+
+  var Q = [
+    // Q1 - completely normal
+    {
+      ph: 1, tag: "01 / 12",
+      q: "您目前的居住类型是？",
+      hint: null,
+      opts: [
+        { t: "独居公寓", s: 3 },
+        { t: "与家人同住", s: 0 },
+        { t: "与室友合住", s: 1 },
+        { t: "学生宿舍", s: 1 }
+      ],
+      resp: function(i) { return null; },
+      sys: null
+    },
+    // Q2 - normal
+    {
+      ph: 1, tag: "02 / 12",
+      q: "您每天出门前是否会检查门窗是否锁好？",
+      hint: null,
+      opts: [
+        { t: "每次都会仔细检查", s: 0 },
+        { t: "大多数时候会", s: 1 },
+        { t: "偶尔会忘记", s: 2 },
+        { t: "基本不检查", s: 3 }
+      ],
+      resp: function(i) {
+        if (i >= 2) return "建议养成每次出门前确认门锁的习惯。据统计，76% 的入室事件发生在未上锁的住宅。";
+        return null;
+      },
+      sys: null
+    },
+    // Q3 - still normal, slightly pointed
+    {
+      ph: 1, tag: "03 / 12",
+      q: "您家的门锁类型是？",
+      hint: "此信息用于安全等级分类评估",
+      opts: [
+        { t: "智能密码锁 / 指纹锁", s: 0 },
+        { t: "防盗门 + 传统钥匙锁", s: 1 },
+        { t: "普通门锁", s: 2 },
+        { t: "不太清楚具体型号", s: 3 }
+      ],
+      resp: function(i) {
+        if (i === 2) return "普通门锁的防撬等级较低，建议升级为C级锁芯。技术性开锁平均用时不超过30秒。";
+        if (i === 3) return "您不清楚自己家门锁的型号。这意味着您也不清楚它的安全等级。也不清楚打开它需要多长时间。";
+        return null;
+      },
+      sys: null
+    },
+    // Q4 - tone shift begins
+    {
+      ph: 2, tag: "04 / 12",
+      q: "您今晚出门了吗？",
+      hint: null,
+      opts: [
+        { t: "没有，一直在家", s: 1 },
+        { t: "出去了，已经回来了", s: 2 },
+        { t: "刚回来不久", s: 3 },
+        { t: "……为什么问今晚", s: 4 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "一直在家。那您应该注意到了——今晚您家楼道的灯，有一盏比平时暗。";
+        if (i === 1) return "已经回来了。回来的时候有没有注意楼梯间有没有异常？比如不该出现的气味，或者不该亮的灯。";
+        if (i === 2) return "刚回来不久。关门的时候，有没有确认身后没有人跟着进来？";
+        if (i === 3) return "我们只是在确认您当前是否在室内。这有助于评估您目前的安全状态。请不要紧张。";
+        return null;
+      },
+      sys: null
+    },
+    // Q5
+    {
+      ph: 2, tag: "05 / 12",
+      q: "此刻，您能听到门外有声音吗？",
+      hint: "请在安静环境下如实作答",
+      opts: [
+        { t: "没有，很安静", s: 1 },
+        { t: "有一些环境噪音", s: 1 },
+        { t: "好像有脚步声", s: 4 },
+        { t: "我不想仔细听", s: 3 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "很安静。安静是好事。但有一种安静是因为有人在刻意不发出声音。";
+        if (i === 1) return "环境噪音。嗯。那您能分辨出其中有没有不属于环境的部分吗。比如呼吸。";
+        if (i === 2) return "脚步声。请不要移动。请问脚步声是在靠近还是在远离。";
+        if (i === 3) return "您不想仔细听。为什么。是因为怕听到什么吗。";
+        return null;
+      },
+      sys: ">> 环境声学分析启动 · 采样中 ··········"
+    },
+    // Q6
+    {
+      ph: 2, tag: "06 / 12",
+      q: "您家的窗帘现在是什么状态？",
+      hint: null,
+      opts: [
+        { t: "全部拉上了", s: 0 },
+        { t: "部分拉上", s: 2 },
+        { t: "没有拉，窗户是透明的", s: 3 },
+        { t: "我没有窗帘", s: 4 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "全部拉上了。那您是安全的。至少——从视线的角度来说。但有些东西不需要用眼睛就能找到您。";
+        if (i === 1) return "部分拉上。那就是说——有一部分没有拉上。有一部分可以从外面看进来。";
+        if (i === 2) return "没有拉。如果现在有人站在您窗户对面的楼里，他可以看到您正在做什么。看到您的屏幕。看到这份问卷。";
+        if (i === 3) return "没有窗帘。";
+        return null;
+      },
+      sys: null
+    },
+    // Q7 - escalation
+    {
+      ph: 3, tag: "07 / 12",
+      q: "您有没有注意到，最近几天家门口有不明物品或痕迹？",
+      hint: null,
+      opts: [
+        { t: "没有注意过", s: 2 },
+        { t: "好像有一些我不记得放的东西", s: 3 },
+        { t: "没有，我家门口很干净", s: 1 },
+        { t: "你为什么要问这个", s: 4 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "没有注意过。大部分人都不会注意。但这不代表没有。有些人在离开前会把痕迹清理得很干净。几乎不留任何东西。几乎。";
+        if (i === 1) return "一些你不记得放的东西。什么东西。它在那里多久了。你确定是你的邻居放的吗。";
+        if (i === 2) return "很干净。好。那您今晚回去的时候可以再看一眼门框的右下角。";
+        if (i === 3) return "我们在评估您的居住环境是否存在异常。这是标准流程。但如果这个问题让您不安——那说明您的直觉在告诉您一些事情。";
+        return null;
+      },
+      sys: ">> 异常记录: 受访者 #0041115 区域近期存在非住户活动痕迹"
+    },
+    // Q8
+    {
+      ph: 3, tag: "08 / 12",
+      q: "如果有人一直在观察您的日常作息——您每天几点出门，几点回来，几点关灯——您觉得您会发现吗？",
+      hint: null,
+      opts: [
+        { t: "会，我对周围环境很敏感", s: 0 },
+        { t: "可能不会……", s: 3 },
+        { t: "为什么要假设这种情况", s: 3 },
+        { t: "你的意思是现在有人在这么做吗", s: 4 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "很敏感。那您有没有注意到，最近您家门口的快递到达时间，总是恰好在您到家之前五分钟。每次都是。";
+        if (i === 1) return "不会。大多数人都不会。一个有经验的人可以在您的生活里观察六个月以上，而您完全不知道。";
+        if (i === 2) return "这不是假设。这是评估项目。我们需要了解您的安全盲区。至于这种情况是不是正在发生——问卷无法代替您自己的判断。";
+        if (i === 3) return "我的意思是，如果有人已经这么做了三个月，您是今天才开始想到这个问题的。";
+        return null;
+      },
+      sys: null
+    },
+    // Q9
+    {
+      ph: 3, tag: "09 / 12",
+      q: "请问您现在能看到自己家的大门吗？",
+      hint: null,
+      opts: [
+        { t: "能，我就在客厅", s: 1 },
+        { t: "不能，我在卧室", s: 3 },
+        { t: "不能，门在拐角处", s: 3 },
+        { t: "为什么要我现在确认这个", s: 4 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "您在客厅。您能看到门。那请您现在看一眼门的底部。门缝下面有没有光线的变化。比如有什么东西挡住了走廊的光。";
+        if (i === 1) return "您在卧室，看不到大门。那也就是说——如果现在有人在您门口站着，您不会知道。";
+        if (i === 2) return "拐角处。看不到。声音传到卧室之前需要经过走廊。等您听到的时候已经很近了。";
+        if (i === 3) return "因为我们需要评估——在您当前的位置，您对入口的感知延迟是多少秒。";
+        return null;
+      },
+      sys: ">> 受访者当前位置: 非视线覆盖区域 · 门口感知延迟: 约 8-12 秒"
+    },
+    // Q10
+    {
+      ph: 3, tag: "10 / 12",
+      q: "以下哪种声音会让您立刻警觉？",
+      hint: null,
+      opts: [
+        { t: "钥匙转动的声音", s: 2 },
+        { t: "门把手被轻轻按下的声音", s: 3 },
+        { t: "走廊里突然安静下来", s: 4 },
+        { t: "以上都不会，我很少注意这些", s: 3 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "钥匙转动。但如果对方不需要钥匙呢。";
+        if (i === 1) return "门把手被按下。很轻。很慢。像是不想让你听见。像是在试探这扇门有没有锁。";
+        if (i === 2) return "突然安静。您选了这个。您知道为什么突然安静会比突然出声更危险吗。因为安静意味着——有什么东西停下来了。停在了某个位置。在等。";
+        if (i === 3) return "您很少注意。那您就是最理想的对象。";
+        return null;
+      },
+      sys: null
+    },
+    // Q11
+    {
+      ph: 4, tag: "11 / 12",
+      q: "这份问卷从第几题开始让你觉得不对劲的？",
+      hint: null,
+      opts: [
+        { t: "第四题", s: 2 },
+        { t: "第五题", s: 2 },
+        { t: "我一直觉得哪里不对但说不上来", s: 4 },
+        { t: "现在", s: 3 }
+      ],
+      resp: function(i) {
+        if (i === 0) return "第四题。'您今晚出门了吗。'——对。那道题开始我就不是在做调研了。";
+        if (i === 1) return "第五题。'您能听到门外有声音吗。'——从那题开始你就在听了。一直在听。你现在还在听。";
+        if (i === 2) return "说不上来。但你的身体知道。你的肩膀在第六题的时候收紧了。你自己没有发现。但我发现了。";
+        if (i === 3) return "现在。已经太晚了。你已经告诉我你住在哪种房子里，你的门锁类型，你在不在家，你的窗帘有没有拉，你能不能看到门口，你对声音的反应速度。你什么都告诉我了。";
+        return null;
+      },
+      sys: ">> [警告] 问卷原始结构校验失败 · 第4-11题内容与备案模板不符 · 终端操作者: 未知"
+    },
+    // Q12 - FINAL
+    {
+      ph: 5, tag: null, final: true,
+      q: "你以为这是问卷吗这从来都不是问卷这是我在确认你家的每一个细节你的门锁型号你的窗帘状态你在哪个房间你能不能看到门口你对声音的反应速度你独居你一个人你今晚没有检查过门你甚至不知道你家门锁的安全等级你什么都告诉我了每一个问题你都认真回答了你很配合你一直都很配合现在请你安静地坐在原地不要动不要看门口不要关掉这个页面因为我已经知道了你在哪里",
+      hint: null,
+      opts: [
+        { t: "（锁门）", s: 2 },
+        { t: "你不是真的", s: 1 },
+        { t: "（一动不动）", s: 4 },
+        { t: "Nikto.", s: 5 }
+      ],
+      resp: null,
+      sys: null
+    }
+  ];
+
+  function getRes(s) {
+    if (s >= 38) return {
+      t: "他进来了。",
+      s: s,
+      b: "你没有动。你坐在原地。你很听话。<br><br>门开了。你没有听到声音。好的锁被打开的时候是没有声音的。<br><br>走廊的灯灭了。卧室的门在你身后，很轻地，关上了。<br><br>有人站在你背后。你感觉到了。脖子后面的汗毛竖起来了。<br><br>一只手，从后面，覆上了你的眼睛。<br><br>很轻。很稳。像是做过很多次。<br><br>一个声音贴着你的耳朵：<br><br><span style='color:#b91c1c'>不要怕。我找了你很久。</span><br><br><span style='font-size:10px;color:#333'>—— NIKTO</span>",
+      c: "#b91c1c"
+    };
+    if (s >= 26) return {
+      t: "门外很安静。",
+      s: s,
+      b: "你起身了。你去检查了门锁。锁是好的。<br><br>你从猫眼往外看——走廊空空的。什么都没有。灯还亮着。<br><br>你松了口气。你告诉自己这只是一份问卷。只是文字。只是屏幕上的光。<br><br>你回到床上。关掉手机。闭上眼睛。<br><br>三秒后你又睁开了。<br><br>因为你想起来——<br><br>你从猫眼往外看的时候，走廊尽头楼梯间的消防门，<br><br>是开着的。<br><br>之前从来没开过。<br><br><span style='font-size:10px;color:#333'>спокойной ночи</span>",
+      c: "#78716c"
+    };
+    if (s >= 14) return {
+      t: "[评估完成]",
+      s: s,
+      b: "您的居家安全意识评分处于中等水平。建议加强日常门窗检查习惯，提升对异常环境信号的敏感度。<br><br>感谢您的参与。<br><br>本问卷到此结束。<br><br>……<br><br>真的结束了吗。<br><br>您今晚会检查门锁的。我知道您会。<br><br><span style='font-size:10px;color:#333'>я знаю</span>",
+      c: "#888"
+    };
+    return {
+      t: "[会话已断开]",
+      s: s,
+      b: "您选择了最安全的答案。理性的、清醒的、不被任何暗示影响的。<br><br>问卷结束了。数据已提交。<br><br>一切正常。<br><br>但今晚关灯之后，黑暗里，您会想起这份问卷。您会想——<br><br>它到底是谁发的。<br><br><span style='font-size:10px;color:#222'>до встречи</span>",
+      c: "#444"
+    };
+  }
+
+  function phase(p) {
+    var b = document.body;
+    if (p===2 && !b.classList.contains('p2')) b.classList.add('p2');
+    if (p===3) { b.classList.remove('p2'); b.classList.add('p3'); document.getElementById('wm').classList.add('on'); }
+    if (p>=4) {
+      b.classList.remove('p2'); b.classList.remove('p3'); b.classList.add('p4');
+      document.getElementById('ov').classList.add('dim');
+      document.getElementById('logo').textContent = 'NIKTO';
+      document.getElementById('badge').textContent = '距离: 0m';
+      document.getElementById('badge').style.borderColor = '#b91c1c';
+      document.getElementById('badge').style.color = '#b91c1c';
+    }
+    if (p===5) {
+      document.getElementById('intro').style.display = 'none';
+      doKnock();
+    }
+  }
+
+  function doKnock() {
+    var ko = document.getElementById('knock');
+    var kt = document.getElementById('kText');
+    var ks = document.getElementById('kSub');
+    ko.classList.add('on');
+    kt.textContent = '';
+
+    setTimeout(function(){
+      kt.textContent = '咚。';
+    }, 800);
+    setTimeout(function(){
+      kt.textContent = '咚。  咚。';
+      document.body.classList.add('shake');
+      setTimeout(function(){ document.body.classList.remove('shake'); }, 400);
+    }, 2200);
+    setTimeout(function(){
+      kt.textContent = '咚。  咚。  咚。';
+      ks.textContent = '有人在敲你的门。';
+      ks.classList.add('on');
+      document.body.classList.add('shake');
+      setTimeout(function(){ document.body.classList.remove('shake'); }, 400);
+    }, 3800);
+    setTimeout(function(){
+      ks.textContent = '请问——您要开门吗？';
+    }, 5500);
+    setTimeout(function(){
+      ko.classList.remove('on');
+      buildQ(cur);
+    }, 7000);
+  }
+
+  function render(idx) {
+    var q = Q[idx];
+    phase(q.ph);
+    if (q.ph === 5) return;
+    buildQ(idx);
+  }
+
+  function buildQ(idx) {
+    var q = Q[idx];
+    var box = document.getElementById('qBox');
+    var dk = q.ph >= 4;
+
+    document.getElementById('pFill').style.width = ((idx+1)/Q.length*100) + '%';
+    document.getElementById('pLabel').textContent = (idx+1) + ' / ' + Q.length;
+
+    var card = document.createElement('div');
+    var cls = 'card';
+    if (dk) cls += ' dark';
+    if (q.ph === 3) cls += ' glow';
+    if (q.final) cls += ' final';
+    card.className = cls;
+    card.id = 'c' + idx;
+
+    var h = '';
+    if (q.tag) h += '<div class="q-tag' + (q.ph>=3?' red':'') + '">' + q.tag + '</div>';
+    if (q.final) {
+      h += '<div class="q-body" style="font-size:13.5px;line-height:2.3;color:#b91c1c;font-weight:400;">' + q.q + '</div>';
+    } else {
+      h += '<div class="q-body">' + q.q + '</div>';
+    }
+    if (q.hint) h += '<div class="q-hint">' + q.hint + '</div>';
+
+    h += '<div class="opts">';
+    for (var i = 0; i < q.opts.length; i++) {
+      h += '<div class="opt' + (dk?' dk':'') + '" data-q="' + idx + '" data-o="' + i + '" id="o' + idx + '-' + i + '">';
+      h += '<div class="dot"></div><span>' + q.opts[i].t + '</span></div>';
+    }
+    h += '</div>';
+    h += '<div class="resp' + (dk?' dk-r':'') + '" id="r' + idx + '"></div>';
+    if (q.sys) h += '<div class="sys' + (q.ph>=3?' r':'') + '" id="s' + idx + '">' + q.sys + '</div>';
+
+    card.innerHTML = h;
+    box.appendChild(card);
+
+    var os = card.querySelectorAll('.opt');
+    for (var j = 0; j < os.length; j++) {
+      os[j].addEventListener('click', pick);
+    }
+
+    setTimeout(function(){
+      card.classList.add('vis');
+      if (q.ph >= 3 || q.final) {
+        card.classList.add('shake');
+        setTimeout(function(){ card.classList.remove('shake'); }, 400);
+      }
+    }, 80);
+
+    if (q.sys) {
+      setTimeout(function(){
+        var se = document.getElementById('s' + idx);
+        if (se) se.classList.add('on');
+      }, 1800);
+    }
+
+    setTimeout(function(){
+      card.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 150);
+  }
+
+  function pick() {
+    var qi = parseInt(this.getAttribute('data-q'));
+    var oi = parseInt(this.getAttribute('data-o'));
+    if (lk[qi]) return;
+    lk[qi] = true;
+
+    var q = Q[qi];
+
+    for (var i = 0; i < q.opts.length; i++) {
+      document.getElementById('o' + qi + '-' + i).classList.remove('sel');
+    }
+    this.classList.add('sel');
+
+    setTimeout(function(){
+      var cd = document.getElementById('c' + qi);
+      if (cd) cd.classList.add('done');
+    }, 1800);
+
+    score += q.opts[oi].s;
+
+    var re = document.getElementById('r' + qi);
+    var rt = null;
+    if (typeof q.resp === 'function') rt = q.resp(oi);
+
+    if (rt) {
+      var dk = q.ph >= 4;
+      if (q.ph >= 3 && !dk) re.classList.add('dk-r');
+      if (dk) { re.classList.remove('dk-r'); re.classList.add('thr'); }
+      re.innerHTML = '<span style="color:#aaa;font-size:10px;">正在分析</span> ···';
+      re.classList.add('on');
+      setTimeout(function(){ re.innerHTML = rt; }, 900 + Math.random()*600);
+    }
+
+    if (q.final && oi === 0) {
+      // lock door option
+      setTimeout(function(){
+        var msg = document.createElement('div');
+        msg.style.cssText = 'text-align:center;color:#b91c1c;font-size:12px;padding:20px;animation:up 0.5s ease;';
+        msg.innerHTML = '你起身了。你跑向门口。你拧了一下锁。<br><br>它本来就是锁着的。<br><br>……<br><br>那刚才的敲门声是从哪里来的？';
+        document.getElementById('qBox').appendChild(msg);
+        setTimeout(function(){ showRes(); }, 3500);
+      }, 1200);
+      return;
+    }
+
+    if (q.final && oi === 1) {
+      setTimeout(function(){
+        document.body.style.transition = 'opacity 0.3s';
+        document.body.style.opacity = '0';
+        setTimeout(function(){
+          document.body.style.opacity = '1';
+          var msg = document.createElement('div');
+          msg.style.cssText = 'text-align:center;color:#b91c1c;font-size:12px;padding:20px;';
+          msg.textContent = '不是真的。那敲门声呢。你刚才听到了。';
+          document.getElementById('qBox').appendChild(msg);
+          setTimeout(function(){ showRes(); }, 2500);
+        }, 1200);
+      }, 1000);
+      return;
+    }
+
+    var delay = q.final ? 2800 : 2200;
+    setTimeout(function(){
+      cur++;
+      if (cur < Q.length) render(cur);
+      else showRes();
+    }, delay);
+  }
+
+  function showRes() {
+    var r = getRes(score);
+    var el = document.getElementById('res');
+    document.getElementById('qBox').style.display = 'none';
+    document.getElementById('intro').style.display = 'none';
+
+    el.innerHTML =
+      '<div class="r-title" style="color:'+r.c+'">'+r.t+'</div>'+
+      '<div class="r-num" style="color:'+r.c+'">'+r.s+'</div>'+
+      '<div style="font-size:9px;color:#555;margin-bottom:24px;letter-spacing:3px;">VULNERABILITY INDEX</div>'+
+      '<div class="r-body">'+r.b+'</div>'+
+      '<div style="margin-top:50px;font-size:9px;color:#333;letter-spacing:1.5px;font-family:monospace;">制作 @不要记得我（闪闪）</div>';
+
+    el.classList.add('on');
+    el.scrollIntoView({ behavior:'smooth' });
+  }
+
+  render(0);
+})();
+</script>
+
+</body>
+</html>
