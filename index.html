@@ -3,7 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="不要记得我（闪闪）/ @BROJUSTNEEDANAME">
+<meta name="copyright" content="Copyright 2025-2026 不要记得我（闪闪）. All rights reserved.">
+<meta name="description" content="Nikto 居家安全意识评估 - 互动式心理恐怖问卷游戏 | 原创作者：不要记得我（闪闪）| quiz.brojustneedaname.top">
+<meta name="original-source" content="https://github.com/BROJUSTNEEDANAME/Nikto--">
 <title>居家安全意识评估</title>
+<!--
+  ============================================================
+  Nikto 居家安全意识评估 - 互动式心理恐怖问卷游戏
+  
+  原创作者 / Original Author: 不要记得我（闪闪）
+  GitHub: https://github.com/BROJUSTNEEDANAME/Nikto--
+  官网 / Official Site: https://quiz.brojustneedaname.top
+  
+  本作品仅在小红书（xiaohongshu/RED）发布，其他平台均为未授权搬运。
+  This work is exclusively published on Xiaohongshu (RED).
+  Any appearance on other platforms (Douyin/TikTok, Bilibili, etc.) is unauthorized.
+  
+  本作品受版权保护。未经作者许可，禁止搬运、转载、二次发布。
+  This work is copyrighted. Unauthorized redistribution is prohibited.
+  ============================================================
+-->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
@@ -220,6 +240,13 @@
 </div>
 
 <script>
+/*
+ * Nikto 居家安全意识评估
+ * 原创作者: 不要记得我（闪闪）/ @BROJUSTNEEDANAME
+ * 源代码: https://github.com/BROJUSTNEEDANAME/Nikto--
+ * 官网: https://quiz.brojustneedaname.top
+ * 本作品仅在小红书发布，未经许可禁止搬运转载
+ */
 (function(){
   var cur = 0, score = 0, lk = {};
 
@@ -674,13 +701,26 @@
       '<div class="r-num" style="color:'+r.c+'">'+r.s+'</div>'+
       '<div style="font-size:9px;color:#555;margin-bottom:24px;letter-spacing:3px;">VULNERABILITY INDEX</div>'+
       '<div class="r-body">'+r.b+'</div>'+
-      '<div style="margin-top:50px;font-size:9px;color:#333;letter-spacing:1.5px;font-family:monospace;">制作 @不要记得我（闪闪）</div>';
+      '<div style="margin-top:50px;font-size:9px;color:#333;letter-spacing:1.5px;font-family:monospace;">制作 @不要记得我（闪闪）</div>'+
+      '<div style="margin-top:8px;font-size:8px;color:#555;letter-spacing:1px;font-family:monospace;">本作品仅在小红书发布 · 其他平台均为未授权搬运</div>';
 
     el.classList.add('on');
     el.scrollIntoView({ behavior:'smooth' });
   }
 
   render(0);
+})();
+
+/* 版权验证 - 不要删除 */
+(function(){
+  console.log('%cNikto 居家安全意识评估 - 原创作者：不要记得我（闪闪）', 'font-size:16px;color:#b91c1c;font-weight:bold');
+  console.log('%cGitHub: https://github.com/BROJUSTNEEDANAME/Nikto--', 'font-size:12px;color:#888');
+  console.log('%c本作品仅在小红书发布，未经许可禁止搬运转载。其他平台均为盗搬。', 'font-size:12px;color:#b91c1c');
+  
+  var w = document.createElement('div');
+  w.style.cssText = 'position:fixed;bottom:8px;right:10px;font-size:10px;color:rgba(185,28,28,0.3);font-family:monospace;pointer-events:none;z-index:9999;letter-spacing:1px';
+  w.textContent = '原创 @不要记得我（闪闪）| 仅在小红书发布';
+  document.body.appendChild(w);
 })();
 </script>
 <script data-goatcounter="https://shanshan.goatcounter.com/count"
